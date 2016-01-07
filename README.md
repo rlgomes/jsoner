@@ -1,5 +1,7 @@
 # jsoner
 
+[![Build Status](https://travis-ci.org/rlgomes/jsoner.svg?branch=master)](https://travis-ci.org/rlgomes/jsoner)
+
 Simple, fast, minimalist JSON library for [node](http://nodejs.org)
 
 ## Installation
