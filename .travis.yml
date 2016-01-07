@@ -9,3 +9,4 @@ node_js:
 script:
     - gulp lint
     - gulp coverage
+    - gulp coveralls

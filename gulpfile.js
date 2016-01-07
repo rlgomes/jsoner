@@ -1,3 +1,4 @@
+var coveralls = require('gulp-coveralls');
 var gulp = require('gulp');
 var istanbul = require('gulp-istanbul');
 var jshint = require('gulp-jshint');
@@ -64,6 +65,11 @@ gulp.task('coverage', ['instrument'], function() {
             }
         }
     }));
+});
+
+gulp.task('coveralls', function() {
+    gulp.src('coverage/**/lcov.info')
+    .pipe(coveralls());
 });
 
 gulp.task('perf', function() {
