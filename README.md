@@ -1,6 +1,7 @@
 # jsoner
 
 [![Build Status](https://travis-ci.org/rlgomes/jsoner.svg?branch=master)](https://travis-ci.org/rlgomes/jsoner)
+[![Coverage Status](https://coveralls.io/repos/rlgomes/jsoner/badge.svg?branch=adding-coveralls-badge&service=github)](https://coveralls.io/github/rlgomes/jsoner?branch=adding-coveralls-badge)
 
 Simple, fast, minimalist JSON library for [node](http://nodejs.org)
 
