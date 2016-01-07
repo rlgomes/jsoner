@@ -1,0 +1,25 @@
+{
+  "name": "jsoner",
+  "version": "0.1.0",
+  "description": "Simple, fast, minimalist JSON library for node",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Rodney Gomes <rodneygomes@gmail.com>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "bluebird": "^3.1.1",
+    "chai": "^3.4.1",
+    "gulp": "^3.9.0",
+    "gulp-istanbul": "^0.10.3",
+    "gulp-jscs": "^3.0.2",
+    "gulp-jshint": "^2.0.0",
+    "gulp-mocha": "^2.2.0",
+    "jshint": "^2.9.1-rc2",
+    "lodash": "^3.10.1",
+    "mocha": "^2.3.4",
+    "tmp": "0.0.28"
+  },
+  "dependencies": {}
+}
