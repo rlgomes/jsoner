@@ -2,12 +2,20 @@
   "name": "jsoner",
   "version": "0.1.0",
   "description": "Simple, fast, minimalist JSON library for node",
+  "keywords": [
+    "json",
+    "parser",
+    "streaming"
+  ],
+  "homepage": "https://github.com/rlgomes/jsoner",
+  "bugs": "https://github.com/rlgomes/jsoner/issues",
+  "author": "Rodney Gomes <rodneygomes@gmail.com>",
+  "repository": "rlgomes/jsoner",
+  "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
   },
-  "author": "Rodney Gomes <rodneygomes@gmail.com>",
-  "license": "Apache-2.0",
   "devDependencies": {
     "bluebird": "^3.1.1",
     "chai": "^3.4.1",

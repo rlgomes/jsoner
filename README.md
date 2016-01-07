@@ -14,7 +14,7 @@ $ npm install jsoner
 ## Features
 
   * stream parsing so you can read unlimited amounts of JSON data without ever
-  	having to hold the totality of the data in memory.
+    having to hold the totality of the data in memory.
   * append to a JSON file on disk without having to ever read the whole object
     into memory.
 
@@ -27,13 +27,13 @@ var jsoner = require('jsoner');
 
 var stream = fs.createReadStream('really_big.json');
 jsoner.parse(stream)
-.on('object', function(object) { 
+.on('object', function(object) {
     console.log(JSON.stringify(object));
 })
-.on('error', function(err) { 
+.on('error', function(err) {
     // do something with the error
 }
-.on('end', function() { 
+.on('end', function() {
 
 };
 ```
