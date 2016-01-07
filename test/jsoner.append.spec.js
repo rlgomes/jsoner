@@ -24,13 +24,13 @@ describe('jsoner', function() {
         it('fails to append to a file in an inexistent file', function() {
             expect(function() {
                 jsoner.appendFileSync(tmpFilename, {});
-            }).to.throw('ENOENT: no such file or directory');
+            }).to.throw(/ENOENT. no such file or directory/);
         });
 
         it('fails to append to a file in an inexistent path', function() {
             expect(function() {
                 jsoner.appendFileSync('/no/mans/land/foo.juttle', {});
-            }).to.throw('ENOENT: no such file or directory');
+            }).to.throw(/ENOENT. no such file or directory/);
         });
 
         it('fails to append an object to an incomplete JSON array', function() {

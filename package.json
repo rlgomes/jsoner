@@ -16,7 +16,7 @@
     "gulp-jscs": "^3.0.2",
     "gulp-jshint": "^2.0.0",
     "gulp-mocha": "^2.2.0",
-    "jshint": "^2.9.1-rc2",
+    "jshint": "^2.x",
     "lodash": "^3.10.1",
     "mocha": "^2.3.4",
     "tmp": "0.0.28"
