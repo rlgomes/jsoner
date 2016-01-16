@@ -1,8 +1,7 @@
 var coveralls = require('gulp-coveralls');
 var gulp = require('gulp');
+var eslint = require('gulp-eslint');
 var istanbul = require('gulp-istanbul');
-var jshint = require('gulp-jshint');
-var jscs = require('gulp-jscs');
 var mocha = require('gulp-mocha');
 
 var srcFiles = [
@@ -11,23 +10,12 @@ var srcFiles = [
     'lib/**/*.js'
 ];
 
-gulp.task('jscs', function() {
+gulp.task('lint', function() {
     return gulp.src(srcFiles)
-    .pipe(jscs({
-        configPath: '.jscsrc'
-    }))
-    .pipe(jscs.reporter('unix'))
-    .pipe(jscs.reporter('fail'));
+	.pipe(eslint())
+	.pipe(eslint.format())
+	.pipe(eslint.failAfterError());
 });
-
-gulp.task('jshint', function() {
-    return gulp.src(srcFiles)
-    .pipe(jshint('./test/.jshintrc'))
-    .pipe(jshint.reporter('default', { verbose: true }))
-    .pipe(jshint.reporter('fail'));
-});
-
-gulp.task('lint', ['jscs', 'jshint']);
 
 gulp.task('instrument', function() {
     return gulp.src('lib/**/*.js')
