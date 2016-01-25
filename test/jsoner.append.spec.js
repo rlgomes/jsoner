@@ -21,11 +21,6 @@ describe('jsoner', function() {
     });
 
     describe('.appendFileSync', function() {
-        it('fails to append to a file in an inexistent file', function() {
-            expect(function() {
-                jsoner.appendFileSync(tmpFilename, {});
-            }).to.throw(/ENOENT. no such file or directory/);
-        });
 
         it('fails to append to a file in an inexistent path', function() {
             expect(function() {
@@ -38,6 +33,15 @@ describe('jsoner', function() {
             expect(function() {
                 jsoner.appendFileSync(tmpFilename, {});
             }).to.throw('not a valid JSON format');
+        });
+
+        it('appends to a inexistent file', function() {
+            var newFilename = tmp.tmpNameSync();
+            var object = { foo: 'bar' };
+            jsoner.appendFileSync(newFilename, object);
+            var data = fs.readFileSync(newFilename);
+            expect(JSON.parse(data.toString())).to.deep.equal([object]);
+            fs.unlinkSync(newFilename);
         });
 
         it('appends a JSON object to an empty file', function() {
@@ -117,5 +121,6 @@ describe('jsoner', function() {
                 done(err);
             });
         });
+
     });
 });
