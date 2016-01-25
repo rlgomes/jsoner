@@ -46,10 +46,10 @@ gulp.task('coverage', ['instrument'], function() {
     .pipe(istanbul.enforceThresholds({
         thresholds: {
             global: {
-                statements: 100,
-                branches: 100,
+                statements: 98,
+                branches: 95,
                 functions: 100,
-                lines: 100
+                lines: 98
             }
         }
     }));
