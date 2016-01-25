@@ -1,4 +1,4 @@
-var _ = require('lodash');
+var _ = require('underscore');
 var expect = require('chai').expect;
 var fs = require('fs');
 var jsoner = require('../lib/index.js');

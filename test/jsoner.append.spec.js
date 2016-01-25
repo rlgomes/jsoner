@@ -1,4 +1,4 @@
-var _ = require('lodash');
+var _ = require('underscore');
 var expect = require('chai').expect;
 var fs = require('fs');
 var jsoner = require('../lib/index.js');
@@ -78,7 +78,7 @@ describe('jsoner', function() {
             var object = { foo: 'bar' };
             // XXX: 4096 is 4x the default read chunkSize in the append code this
             // should be configurable.
-            return fs.writeFileAsync(tmpFilename, _.pad('', 4096, ' '))
+            return fs.writeFileAsync(tmpFilename, new Array(4096).join(' '))
             .then(function() {
                 return jsoner.appendFile(tmpFilename, object);
             })
