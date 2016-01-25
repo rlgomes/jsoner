@@ -167,5 +167,12 @@ describe('jsoner', function() {
             expect(results).to.deep.equal(array1.concat(array2));
         });
 
+        it('always creates the file even on an empty append', function() {
+            jsoner.appendFileSync(tmpFilename, []);
+            var jsonString = fs.readFileSync(tmpFilename).toString();
+            var results = JSON.parse(jsonString);
+            expect(results).to.deep.equal([]);
+        });
+
     });
 });
