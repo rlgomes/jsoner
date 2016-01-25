@@ -43,14 +43,26 @@ jsoner.parse(stream)
 ```js
 var jsoner = require('jsoner');
 
-jsoner.appendFileSync('users.json', {
+jsoner.appendFile('users.json', {
     firstName: "John",
     lastName:"Doe"
+})
+.then(function() {
+    console.log('all done');
+})
+.catch(function(err) {
+    console.error('there was an issue', err); 
 });
 
 jsoner.appendFileSync('users.json', {
     firstName: "Jane",
     lastName:"Doe"
+})
+.then(function() {
+    console.log('all done');
+})
+.catch(function(err) {
+    console.error('there was an issue', err); 
 });
 ```
 

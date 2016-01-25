@@ -20,55 +20,91 @@ describe('jsoner', function() {
         }
     });
 
-    describe('.appendFileSync', function() {
+    describe('.appendFile', function() {
 
         it('fails to append to a file in an inexistent path', function() {
-            expect(function() {
-                jsoner.appendFileSync('/no/mans/land/foo.juttle', {});
-            }).to.throw(/ENOENT. no such file or directory/);
+            return jsoner.appendFile('/no/mans/land/foo.juttle')
+            .then(function() {
+                throw Error('previous statement should have failed');
+            })
+            .catch(function(err) {
+                expect(err.toString()).to.match(/ENOENT. no such file or directory/);
+            });
         });
 
         it('fails to append an object to an incomplete JSON array', function() {
-            fs.writeFileSync(tmpFilename, '[ ');
-            expect(function() {
-                jsoner.appendFileSync(tmpFilename, {});
-            }).to.throw('not a valid JSON format');
+            return fs.writeFileAsync(tmpFilename, '[ ')
+            .then(function() {
+                return jsoner.appendFile(tmpFilename, {})
+            })
+            .then(function() {
+                throw Error('previous statement should have failed');
+            })
+            .catch(function(err) {
+                expect(err.toString()).to.contain('not a valid JSON format');
+            });
         });
 
         it('appends to a inexistent file', function() {
             var newFilename = tmp.tmpNameSync();
             var object = { foo: 'bar' };
-            jsoner.appendFileSync(newFilename, object);
-            var data = fs.readFileSync(newFilename);
-            expect(JSON.parse(data.toString())).to.deep.equal([object]);
-            fs.unlinkSync(newFilename);
+            jsoner.appendFile(newFilename, object)
+            .then(function() {
+                return fs.readFileAsync(newFilename)
+            })
+            .then(function(data) {
+                expect(JSON.parse(data.toString())).to.deep.equal([object]);
+            })
+            .finally(function() {
+                return fs.unlinkAsync(newFilename);
+            });
         });
 
         it('appends a JSON object to an empty file', function() {
             var object = { foo: 'bar' };
-            fs.writeFileSync(tmpFilename, '');
-            jsoner.appendFileSync(tmpFilename, object);
-            var data = fs.readFileSync(tmpFilename);
-            expect(JSON.parse(data.toString())).to.deep.equal([object]);
+            return fs.writeFileAsync(tmpFilename, '')
+            .then(function() {
+                return jsoner.appendFile(tmpFilename, object);
+            })
+            .then(function() {
+                return fs.readFileSync(tmpFilename);
+            })
+            .then(function(data) {
+                expect(JSON.parse(data.toString())).to.deep.equal([object]);
+            });
         });
 
         it('appends a JSON object to a file full of whitespace', function() {
             var object = { foo: 'bar' };
-            fs.writeFileSync(tmpFilename, _.pad('', 4096, ' '));
-            jsoner.appendFileSync(tmpFilename, object);
-            var data = fs.readFileSync(tmpFilename);
-            expect(JSON.parse(data.toString())).to.deep.equal([object]);
+            // XXX: 4096 is 4x the default read chunkSize in the append code this
+            // should be configurable.
+            return fs.writeFileAsync(tmpFilename, _.pad('', 4096, ' '))
+            .then(function() {
+                return jsoner.appendFile(tmpFilename, object);
+            })
+            .then(function() {
+                return fs.readFileAsync(tmpFilename);
+            })
+            .then(function(data) {
+                expect(JSON.parse(data.toString())).to.deep.equal([object]);
+            });
         });
 
         it('appends a JSON object to an empty JSON array', function() {
             var object = { foo: 'bar' };
-            fs.writeFileSync(tmpFilename, '[]');
-            jsoner.appendFileSync(tmpFilename, object);
-            var data = fs.readFileSync(tmpFilename);
-            expect(JSON.parse(data.toString())).to.deep.equal([object]);
+            return fs.writeFileAsync(tmpFilename, '[]')
+            .then(function() {
+                return jsoner.appendFile(tmpFilename, object);
+            })
+            .then(function() {
+                return fs.readFileAsync(tmpFilename);
+            })
+            .then(function(data) {
+                expect(JSON.parse(data.toString())).to.deep.equal([object]);
+            });
         });
 
-        it('appends multiple JSON objects at once', function(done) {
+        it('appends multiple JSON objects at once', function() {
             var objects = [];
             for (var index = 0; index < 1024; index++) {
                 objects.push({
@@ -76,25 +112,31 @@ describe('jsoner', function() {
                     index: index
                 });
             }
-            fs.writeFileSync(tmpFilename, '[]');
-            jsoner.appendFileSync(tmpFilename, objects);
-            var stream = fs.createReadStream(tmpFilename);
-            var processed = 0;
-            jsoner.parse(stream)
-            .on('object', function(object) {
-                expect(object).to.deep.equal({ foo: 'bar', index: processed });
-                processed++;
+            return fs.writeFileAsync(tmpFilename, '[]')
+            .then(function() {
+                return jsoner.appendFile(tmpFilename, objects);
             })
-            .on('end', function() {
-                expect(processed).to.equal(1024);
-                done();
-            })
-            .on('error', function(err) {
-                done(err);
+            .then(function() {
+                return new Promise(function(resolve, reject) {
+                    var stream = fs.createReadStream(tmpFilename);
+                    var processed = 0;
+                    jsoner.parse(stream)
+                    .on('object', function(object) {
+                        expect(object).to.deep.equal({ foo: 'bar', index: processed });
+                        processed++;
+                    })
+                    .on('end', function() {
+                        expect(processed).to.equal(1024);
+                        resolve();
+                    })
+                    .on('error', function(err) {
+                        reject(err);
+                    });
+                });
             });
         });
 
-        it('appends multiple JSON objects one by one', function(done) {
+        it('appends multiple JSON objects one by one', function() {
             var objects = [];
             for (var index = 0; index < 1024; index++) {
                 objects.push({
@@ -102,27 +144,39 @@ describe('jsoner', function() {
                     index: index
                 });
             }
-            fs.writeFileSync(tmpFilename, '[]');
-            _.each(objects, function(object) {
-                jsoner.appendFileSync(tmpFilename, object);
-            });
-            var stream = fs.createReadStream(tmpFilename);
-            var processed = 0;
-            jsoner.parse(stream)
-            .on('object', function(object) {
-                expect(object).to.deep.equal({ foo: 'bar', index: processed });
-                processed++;
+            return fs.writeFileAsync(tmpFilename, '[]')
+            .then(function() {
+                var base = Promise.resolve();
+              
+                _.each(objects, function(object) {
+                    base = base.then(function() {
+                        return jsoner.appendFile(tmpFilename, object);
+                    });
+                });
+
+                return base;
             })
-            .on('end', function() {
-                expect(processed).to.equal(1024);
-                done();
-            })
-            .on('error', function(err) {
-                done(err);
+            .then(function() {
+                return new Promise(function(resolve, reject) {
+                    var stream = fs.createReadStream(tmpFilename);
+                    var processed = 0;
+                    jsoner.parse(stream)
+                    .on('object', function(object) {
+                        expect(object).to.deep.equal({ foo: 'bar', index: processed });
+                        processed++;
+                    })
+                    .on('end', function() {
+                        expect(processed).to.equal(1024);
+                        resolve();
+                    })
+                    .on('error', function(err) {
+                        reject(err);
+                    });
+                });
             });
         });
 
-        it('appends multiple JSON arrays', function(done) {
+        it('appends multiple JSON arrays', function() {
             var array1 = [
                 { user: 'foo' },
                 { user: 'bar' }
@@ -132,22 +186,29 @@ describe('jsoner', function() {
                 { user: 'buzz' }
             ];
 
-            fs.writeFileSync(tmpFilename, '[]');
-            jsoner.appendFileSync(tmpFilename, array1);
-            jsoner.appendFileSync(tmpFilename, array2);
-
-            var stream = fs.createReadStream(tmpFilename);
-            var results = [];
-            jsoner.parse(stream)
-            .on('object', function(object) {
-                results.push(object);
+            return fs.writeFileAsync(tmpFilename, '[]')
+            .then(function() {
+                return jsoner.appendFile(tmpFilename, array1);
             })
-            .on('end', function() {
-                expect(results).to.deep.equal(array1.concat(array2));
-                done();
+            .then(function() {
+                return jsoner.appendFile(tmpFilename, array2);
             })
-            .on('error', function(err) {
-                done(err);
+            .then(function() {
+                return new Promise(function(resolve, reject) {
+                    var stream = fs.createReadStream(tmpFilename);
+                    var results = [];
+                    jsoner.parse(stream)
+                    .on('object', function(object) {
+                        results.push(object);
+                    })
+                    .on('end', function() {
+                        expect(results).to.deep.equal(array1.concat(array2));
+                        resolve();
+                    })
+                    .on('error', function(err) {
+                        reject(err);
+                    });
+                });
             });
         });
 
@@ -158,21 +219,33 @@ describe('jsoner', function() {
             ];
             var array2 = [];
 
-            fs.writeFileSync(tmpFilename, '[]');
-            jsoner.appendFileSync(tmpFilename, array1);
-            jsoner.appendFileSync(tmpFilename, array2);
-
-            var jsonString = fs.readFileSync(tmpFilename).toString();
-            var results = JSON.parse(jsonString);
-            expect(results).to.deep.equal(array1.concat(array2));
+            return fs.writeFileAsync(tmpFilename, '[]')
+            .then(function() {
+                return jsoner.appendFile(tmpFilename, array1);
+            })
+            .then(function() {
+                return jsoner.appendFile(tmpFilename, array2);
+            })
+            .then(function() {
+                return fs.readFileSync(tmpFilename).toString();
+            })
+            .then(function(data) {
+                var results = JSON.parse(data);
+                expect(results).to.deep.equal(array1.concat(array2));
+            });
         });
 
         it('always creates the file even on an empty append', function() {
-            jsoner.appendFileSync(tmpFilename, []);
-            var jsonString = fs.readFileSync(tmpFilename).toString();
-            var results = JSON.parse(jsonString);
-            expect(results).to.deep.equal([]);
+            return jsoner.appendFile(tmpFilename, [])
+            .then(function() {
+                return fs.readFileSync(tmpFilename).toString();
+            })
+            .then(function(data) {
+                var results = JSON.parse(data);
+                expect(results).to.deep.equal([]);
+            });
         });
 
     });
+
 });
