@@ -122,5 +122,50 @@ describe('jsoner', function() {
             });
         });
 
+        it('appends multiple JSON arrays', function(done) {
+            var array1 = [
+                { user: 'foo' },
+                { user: 'bar' }
+            ];
+            var array2 = [
+                { user: 'fizz' },
+                { user: 'buzz' }
+            ];
+
+            fs.writeFileSync(tmpFilename, '[]');
+            jsoner.appendFileSync(tmpFilename, array1);
+            jsoner.appendFileSync(tmpFilename, array2);
+
+            var stream = fs.createReadStream(tmpFilename);
+            var results = [];
+            jsoner.parse(stream)
+            .on('object', function(object) {
+                results.push(object);
+            })
+            .on('end', function() {
+                expect(results).to.deep.equal(array1.concat(array2));
+                done();
+            })
+            .on('error', function(err) {
+                done(err);
+            });
+        });
+
+        it('appends empty JSON arrays', function() {
+            var array1 = [
+                { user: 'foo' },
+                { user: 'bar' }
+            ];
+            var array2 = [];
+
+            fs.writeFileSync(tmpFilename, '[]');
+            jsoner.appendFileSync(tmpFilename, array1);
+            jsoner.appendFileSync(tmpFilename, array2);
+
+            var jsonString = fs.readFileSync(tmpFilename).toString();
+            var results = JSON.parse(jsonString);
+            expect(results).to.deep.equal(array1.concat(array2));
+        });
+
     });
 });
