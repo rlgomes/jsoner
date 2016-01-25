@@ -12,7 +12,7 @@
   "author": "Rodney Gomes <rodneygomes@gmail.com>",
   "repository": "rlgomes/jsoner",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "mocha"
   },
