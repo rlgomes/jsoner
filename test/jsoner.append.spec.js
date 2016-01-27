@@ -28,7 +28,7 @@ describe('jsoner', function() {
                 throw Error('previous statement should have failed');
             })
             .catch(function(err) {
-                expect(err.toString()).to.match(/ENOENT. no such file or directory/);
+                expect(err.toString()).to.match(/ENOENT/);
             });
         });
 
