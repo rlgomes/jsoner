@@ -5,8 +5,8 @@ var tmp = require('tmp');
 
 describe('jsoner.appendFile performance tests', function() {
 
-    it('appends 20,000 small JSON objects, one by one', function(done) {
-        var iterations = 20000;
+    it('appends 50,000 small JSON objects, one by one', function(done) {
+        var iterations = 50000;
         var tmpFilename = tmp.tmpNameSync();
 
         var start = Date.now();

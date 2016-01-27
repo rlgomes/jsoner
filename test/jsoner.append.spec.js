@@ -23,7 +23,7 @@ describe('jsoner', function() {
     describe('.appendFile', function() {
 
         it('fails to append to a file in an inexistent path', function() {
-            return jsoner.appendFile('/no/mans/land/foo.juttle')
+            return jsoner.appendFile('/no/mans/land/foo.juttle', {})
             .then(function() {
                 throw Error('previous statement should have failed');
             })
@@ -138,12 +138,13 @@ describe('jsoner', function() {
 
         it('appends multiple JSON objects one by one', function() {
             var objects = [];
-            for (var index = 0; index < 1024; index++) {
+            for (var index = 0; index < 10; index++) {
                 objects.push({
                     foo: 'bar',
                     index: index
                 });
             }
+
             return fs.writeFileAsync(tmpFilename, '[]')
             .then(function() {
                 var base = Promise.resolve();
@@ -157,21 +158,10 @@ describe('jsoner', function() {
                 return base;
             })
             .then(function() {
-                return new Promise(function(resolve, reject) {
-                    var stream = fs.createReadStream(tmpFilename);
-                    var processed = 0;
-                    jsoner.parse(stream)
-                    .on('object', function(object) {
-                        expect(object).to.deep.equal({ foo: 'bar', index: processed });
-                        processed++;
-                    })
-                    .on('end', function() {
-                        expect(processed).to.equal(1024);
-                        resolve();
-                    })
-                    .on('error', function(err) {
-                        reject(err);
-                    });
+                return fs.readFileAsync(tmpFilename) 
+                .then(function(data) { 
+                    var jsonData = JSON.parse(data.toString());
+                    expect(jsonData).to.deep.equal(objects);
                 });
             });
         });
